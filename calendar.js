@@ -1,5 +1,5 @@
 // Calendar: a Javascript class for Mootools that adds accessible and unobtrusive date pickers to your form elements <http://electricprism.com/aeron/calendar>
-// Calendar RC4, Copyright (c) 2007 Aeron Glemann <http://electricprism.com/aeron>, MIT Style License.
+// Copyright (c) 2010 Aeron Glemann <http://electricprism.com/aeron>, MIT Style License.
 
 var Calendar = new Class({
 	Implements: [Options, Events],
