@@ -135,9 +135,9 @@ var Calendar = new Class({
 
 	blocked: function(cal) {
 		var blocked = [];
+
 		var offset = new Date(cal.year, cal.month, 1).getDay(); // day of the week (offset)
 		var last = new Date(cal.year, cal.month + 1, 0).getDate(); // last day of this month
-		
 		this.options.blocked.each(function(date){
 			var values = date.split(' ');
 			
@@ -156,27 +156,31 @@ var Calendar = new Class({
 					}
 				}
 			}
-
 			// execution
 			if (values[2].contains(cal.year + '') || values[2].contains('*')){
 				if (values[1].contains(cal.month + 1 + '') || values[1].contains('*')){
-					values[0].each(function(val){ // if blocked value indicates this month / year
-						if (val > 0){ blocked.push(val.toInt()); } // add date to blocked array
-					});
+					if(values[0].contains('*')){// if contains * block all days
+					    for(i = 0; i <= last; i++){
+					        blocked.push(i + 1);
+					    }
+					}else{ // if contains * this is ignored
+					   	values[0].each(function(val){ // if blocked value indicates this month / year
+    						if (val > 0){ blocked.push(val.toInt());} // add date to blocked array
+    					});
+					
+					    if (values[3]){ // optional value for day of week
+    						for (var i = 0; i < last; i++){
+    								var day = (i + offset) % 7;
 
-					if (values[3]){ // optional value for day of week
-						for (var i = 0; i < last; i++){
-								var day = (i + offset) % 7;
-	
-								if (values[3].contains(day + '')){ 
-									blocked.push(i + 1); // add every date that corresponds to the blocked day of the week to the blocked array
-								}
-						}
+    								if (values[3].contains(day + '')){ 
+    									blocked.push(i + 1); // add every date that corresponds to the blocked day of the week to the blocked array
+    								}
+    						}
+    					}
 					}
 				}
 			}
 		}, this);
-
 		return blocked;
 	},
 
@@ -265,7 +269,7 @@ var Calendar = new Class({
 					
 					if (months_end.getLast() < end.getMonth()) { 
 						d = new Date(start.getFullYear(), months_end.getLast() + 1, 0); // last day of new month
-					
+					    
 						if (end.getDate() > d.getDate()) { end.setDate(d.getDate()); }
 	
 						end.setMonth(months_end.getLast());
@@ -273,7 +277,6 @@ var Calendar = new Class({
 				}
 			}
 		}, this);
-		
 		return { 'start': start, 'end': end };
 	},
 
@@ -361,7 +364,6 @@ var Calendar = new Class({
 
 		if (cal.val.getDate() < cal.days[0]) { cal.val.setDate(cal.days[0]); }
 		if (cal.val.getDate() > cal.days.getLast()) { cal.val.setDate(cal.days.getLast()); }
-		
 		cal.els.each(function(el) {	// then we can set the value to the field
 			el.value = this.format(cal.val, el.format); 		
 		}, this);
@@ -1031,7 +1033,7 @@ var Calendar = new Class({
 		// we start with what would be the first and last days were there no restrictions
 		var first = 1;
 		var last = new Date(cal.year, cal.month + 1, 0).getDate(); // last day of the month
-		
+
 		// if we're in an out of bounds year
 		if (cal.year == cal.start.getFullYear()) {
 			// in the special case of improved navigation but no months array, we'll need to construct one
@@ -1065,7 +1067,6 @@ var Calendar = new Class({
 
 		// let's get our invalid days
 		var blocked = this.blocked(cal);
-
 		// finally we can prepare all the valid days in a neat little array
 		if ($type(days) == 'array') { // somewhere there was a days select
 			days = days.filter(function(day) {
